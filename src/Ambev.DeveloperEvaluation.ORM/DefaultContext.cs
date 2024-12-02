@@ -22,20 +22,6 @@ public class DefaultContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.HasSequence<int>("ProductSequence");
-        //modelBuilder.HasSequence<int>("ProductSalesSequence");
-        //modelBuilder.HasSequence<int>("SalesSequence");
-        //modelBuilder.Entity<Product>().
-        //    Property(o => o.Id).
-        //    HasDefaultValueSql("NEXT VALUE FOR ProductSequence");
-
-        //modelBuilder.Entity<SaleProduct>().
-        //    Property(o => o.Id).
-        //    HasDefaultValueSql("NEXT VALUE FOR ProductSalesSequence");
-
-        //modelBuilder.Entity<Sales>().
-        //    Property(o => o.Id).
-        //    HasDefaultValueSql("NEXT VALUE FOR SalesSequence");
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }
