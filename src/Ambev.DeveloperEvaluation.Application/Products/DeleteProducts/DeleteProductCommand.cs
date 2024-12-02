@@ -21,4 +21,8 @@ public record DeleteProductCommand : IRequest<DeleteProductResponse>
     {
         this.Id = id;
     }
+    public DeleteProductCommand()
+    {
+        
+    }
 }

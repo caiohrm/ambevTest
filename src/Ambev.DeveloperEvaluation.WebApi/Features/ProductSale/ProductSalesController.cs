@@ -1,18 +1,15 @@
-using Ambev.DeveloperEvaluation.Application.Products.DeleteProducts;
 using Ambev.DeveloperEvaluation.Application.ProductSale.AddProductSale;
 using Ambev.DeveloperEvaluation.Application.ProductSale.DeleteProductSale;
 using Ambev.DeveloperEvaluation.Application.ProductSale.UpdateProductSale;
-using Ambev.DeveloperEvaluation.Application.Sales.CreateSales;
-using Ambev.DeveloperEvaluation.Application.Sales.GetSales;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProducts;
 using Ambev.DeveloperEvaluation.WebApi.Features.ProductSale.AddProductSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.ProductSale.DeleteProductSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.ProductSale.UpdateProductSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSales;
+using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.ProductSale;
@@ -46,14 +43,14 @@ public class ProductSalesController : BaseController
     /// <param name="cancellationToken">Cancelation token</param>
     /// <returns>The created product sales details</returns>
     [HttpPost("{salesId}/product")]
-    //[Authorize(Roles = nameof(UserRole.Admin)+"," + nameof(UserRole.Manager))]
+    [ServiceFilter(typeof(ActionFilterMessageBroker))]
+    [Authorize()]
     [ProducesResponseType(typeof(ApiResponseWithData<AddProductSaleResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProductSales([FromRoute] int salesId, [FromBody] AddProductSaleRequest request, CancellationToken cancellationToken)
     {
         var validator = new AddProductSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
@@ -80,9 +77,11 @@ public class ProductSalesController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the Sales was deleted</returns>
     [HttpDelete("{salesId}/product/{productId}")]
+    [ServiceFilter(typeof(ActionFilterMessageBroker))]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Manager))]
     public async Task<IActionResult> DeleteSales([FromRoute] int salesId, [FromRoute] int productId, CancellationToken cancellationToken)
     {
         var request = new DeleteProductSaleRequest { SalesId = salesId, ProductId = productId };
@@ -113,9 +112,11 @@ public class ProductSalesController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the Sales was deleted</returns>
     [HttpPut("{salesId}/product/{productId}")]
+    [ServiceFilter(typeof(ActionFilterMessageBroker))]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [Authorize()]
     public async Task<IActionResult> PutSales([FromRoute] int salesId, [FromRoute] int productId, [FromBody] UpdateProductSaleRequest request, CancellationToken cancellationToken)
     {
         var validator = new UpdateProductSaleRequestValidator();

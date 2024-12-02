@@ -103,6 +103,7 @@ public class ProductController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Manager))]
     public async Task<IActionResult> DeleteProduct([FromRoute] int id, CancellationToken cancellationToken)
     {
         var request = new DeleteProductRequest { Id = id };

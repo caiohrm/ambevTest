@@ -5,9 +5,13 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Consumer;
+using Ambev.DeveloperEvaluation.WebApi.Features.ProductSale.AddProductSale;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
@@ -52,7 +56,39 @@ public class Program
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+            builder.Services.AddMassTransit(bussConfigurator =>
+            {
+                
+                bussConfigurator.SetKebabCaseEndpointNameFormatter();
+                bussConfigurator.UsingRabbitMq((rabbitmq, busFactoryConfigurator) => 
+                {
+                    busFactoryConfigurator.Host(builder.Configuration.GetConnectionString("RabbitMq"), "/" ,hostconfigurator =>
+                    {
+                        hostconfigurator.Username(builder.Configuration.GetConnectionString("RabbitMqUser"));
+                        hostconfigurator.Password(builder.Configuration.GetConnectionString("RabbitMqPassword"));
+                    });
+                    busFactoryConfigurator.Publish<Message>(e =>
+                    {
+                        e.ExchangeType = "topic";
+                        
+                    });
+                    busFactoryConfigurator.ReceiveEndpoint("MSFT", e =>
+                    {
+                        e.ConfigureConsumeTopology = false;
+                        e.ExchangeType = "topic";
+                        e.Consumer<BrokerConsumer>();
+                        e.Bind<Message>(e => 
+                        {
+                            e.ExchangeType="topic";
+                        });
+                    });
+                    
+
+                });
+            });
+            builder.Services.AddScoped<ActionFilterMessageBroker>();
             var app = builder.Build();
+            
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())

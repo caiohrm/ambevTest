@@ -5,6 +5,10 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
 using Ambev.DeveloperEvaluation.Unit.Application.TestData;
 using Ambev.DeveloperEvaluation.Unit.Domain;
+using AutoMapper;
+using FluentAssertions;
+using NSubstitute;
+using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application
 {
@@ -60,7 +64,6 @@ namespace Ambev.DeveloperEvaluation.Unit.Application
 
             // Then
             createProductResult.Should().NotBeNull();
-            //createProductResult.Id.Should().Be(user.Id);
             await _productRepository.Received(1).CreateAsync(Arg.Any<Product>(), Arg.Any<CancellationToken>());
         }
     }

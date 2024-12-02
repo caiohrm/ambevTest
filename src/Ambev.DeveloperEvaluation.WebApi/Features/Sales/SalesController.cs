@@ -2,13 +2,16 @@ using Ambev.DeveloperEvaluation.Application.Products.DeleteProducts;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSales;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSales;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSales;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProducts;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSales;
+using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
@@ -42,8 +45,10 @@ public class SalesController : BaseController
     /// <returns>The created sales details</returns>
     [HttpPost]
     //[Authorize(Roles = nameof(UserRole.Admin)+"," + nameof(UserRole.Manager))]
+    [ServiceFilter(typeof(ActionFilterMessageBroker))]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateSalesResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [Authorize()]
     public async Task<IActionResult> CreateSales([FromBody] CreateSalesRequest request, CancellationToken cancellationToken)
     {
         var validator = new CreateSalesRequestValidator();
@@ -100,9 +105,11 @@ public class SalesController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the Sales was deleted</returns>
     [HttpDelete("{id}")]
+    [ServiceFilter(typeof(ActionFilterMessageBroker))]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Manager))]
     public async Task<IActionResult> DeleteSales([FromRoute] int id, CancellationToken cancellationToken)
     {
         var request = new DeleteSalesRequest { Id = id };

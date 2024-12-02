@@ -50,7 +50,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// <summary>
         /// Sale its canceled
         /// </summary>
-        public bool Canceled { get; set; }
+        public bool Canceled { get; set; } = false;
 
         /// <summary>
         /// Gets the unique identifier of the Sales

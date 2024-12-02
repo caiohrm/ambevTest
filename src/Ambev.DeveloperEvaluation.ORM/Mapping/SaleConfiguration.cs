@@ -26,7 +26,6 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sales>
         builder.Property(u => u.CustomerId).IsRequired();
         builder.Property(u => u.Total).IsRequired();
         builder.Property(u => u.Branch).IsRequired();
-        builder.Property(u => u.Canceled).IsRequired().HasDefaultValue(false);
 
     }
 }

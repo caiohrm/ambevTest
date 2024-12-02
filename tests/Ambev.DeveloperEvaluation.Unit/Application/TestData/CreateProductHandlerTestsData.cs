@@ -1,5 +1,6 @@
 ﻿using System;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProducts;
+using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application.TestData
 {
