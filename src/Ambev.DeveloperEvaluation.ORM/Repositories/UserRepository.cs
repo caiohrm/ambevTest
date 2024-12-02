@@ -41,6 +41,7 @@ public class UserRepository : IUserRepository
     /// <returns>The user if found, null otherwise</returns>
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        _context.Database.EnsureCreated();
         return await _context.Users.FirstOrDefaultAsync(o=> o.Id == id, cancellationToken);
     }
 
