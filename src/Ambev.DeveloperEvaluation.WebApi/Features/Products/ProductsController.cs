@@ -42,7 +42,7 @@ public class ProductController : BaseController
     /// <param name="cancellationToken">Cancelation token</param>
     /// <returns>The created product details</returns>
     [HttpPost]
-    //[Authorize(Roles = nameof(UserRole.Admin)+"," + nameof(UserRole.Manager))]
+    [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Manager))]
     [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)

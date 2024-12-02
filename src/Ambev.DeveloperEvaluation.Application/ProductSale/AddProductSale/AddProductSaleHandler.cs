@@ -49,11 +49,10 @@ namespace Ambev.DeveloperEvaluation.Application.ProductSale.AddProductSale
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
-            var productSale = _productSalesRepository.GetByidAsync(command.ProductId, command.SalesId, cancellationToken);
-            if(productSale != null)
-            {
+            var productSaleExists = await _productSalesRepository.GetByidAsync(command.ProductId, command.SalesId, cancellationToken);
+            if(productSaleExists != null)
                 throw new ValidationException("Product already exists in sale");
-            }
+
             var saleProductValidation = _mapper.Map<ValidateProductSaleCommand>(command);
             var productSale = await _mediator.Send(saleProductValidation, cancellationToken);
 

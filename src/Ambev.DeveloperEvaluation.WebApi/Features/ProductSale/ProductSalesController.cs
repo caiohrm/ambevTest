@@ -44,7 +44,7 @@ public class ProductSalesController : BaseController
     /// <returns>The created product sales details</returns>
     [HttpPost("{salesId}/product")]
     [ServiceFilter(typeof(ActionFilterMessageBroker))]
-    [Authorize()]
+    //[Authorize()]
     [ProducesResponseType(typeof(ApiResponseWithData<AddProductSaleResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProductSales([FromRoute] int salesId, [FromBody] AddProductSaleRequest request, CancellationToken cancellationToken)

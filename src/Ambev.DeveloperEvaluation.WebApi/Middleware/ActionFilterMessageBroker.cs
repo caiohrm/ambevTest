@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Middleware;
 
@@ -17,16 +18,21 @@ public class ActionFilterMessageBroker : IActionFilter
     }
     void IActionFilter.OnActionExecuted(ActionExecutedContext context)
     {
+        
         var response = (CreatedResult)context.Result;
+        if(response == null)
+            return;
         var data = context.RouteData.Values["salesId"];
         if (data != null)
         {
             _publishEndpoint.Publish<Message>(new Message() { Text= $"Sales with id {data} was created or changed" });
+            return;
         }
-        var dataCreated = ((ApiResponseWithData<CreateSalesResponse>)response.Value).Data.Id;
+
+        var dataCreated = (response.Value as ApiResponseWithData<CreateSalesResponse>);
         if (dataCreated != null)
         {
-            _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {dataCreated} was created " });
+            _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {dataCreated.Data.Id} was created " });
         }
     }
 
