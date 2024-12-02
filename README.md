@@ -15,7 +15,7 @@
 ## PostgresSql
 - docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 
-To start testing it first create a new user, each user has different roles with privileges 
+## To start testing it first create a new user, each user has different roles with privileges 
 
 - Customer: Can create,update and Select (POST,PUT)    
 - Manager: Can create,update,delete and Select (POST,PUT,GET,DELETE)
