@@ -104,15 +104,15 @@ public class SalesController : BaseController
     /// <param name="id">The unique identifier of the Sales to delete</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Success response if the Sales was deleted</returns>
-    [HttpDelete("{id}")]
+    [HttpDelete("{salesId}")]
     [ServiceFilter(typeof(ActionFilterMessageBroker))]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Manager))]
-    public async Task<IActionResult> DeleteSales([FromRoute] int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteSales([FromRoute] int salesId, CancellationToken cancellationToken)
     {
-        var request = new DeleteSalesRequest { Id = id };
+        var request = new DeleteSalesRequest { Id = salesId };
         var validator = new DeleteSalesRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 

@@ -18,22 +18,45 @@ public class ActionFilterMessageBroker : IActionFilter
     }
     void IActionFilter.OnActionExecuted(ActionExecutedContext context)
     {
-        
-        var response = (CreatedResult)context.Result;
-        if(response == null)
-            return;
-        var data = context.RouteData.Values["salesId"];
-        if (data != null)
+        try
         {
-            _publishEndpoint.Publish<Message>(new Message() { Text= $"Sales with id {data} was created or changed" });
-            return;
-        }
+            var response = context.Result as CreatedResult;
+            if (response != null)
+            {
+                var data = context.RouteData.Values["salesId"];
+                if (data != null)
+                {
+                    _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {data} was created or changed" });
+                    return;
+                }
 
-        var dataCreated = (response.Value as ApiResponseWithData<CreateSalesResponse>);
-        if (dataCreated != null)
-        {
-            _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {dataCreated.Data.Id} was created " });
+                var dataCreated = (response.Value as ApiResponseWithData<CreateSalesResponse>);
+                if (dataCreated != null)
+                {
+                    _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {dataCreated.Data.Id} was created " });
+                    return;
+                }
+            }
+
+            var dataDeleted = (OkObjectResult)context.Result;
+            if(dataDeleted != null)
+            {
+                Console.WriteLine(context.RouteData.Values);
+                var datavalue = context.RouteData.Values["salesId"];
+                if (datavalue != null)
+                {
+                    _publishEndpoint.Publish<Message>(new Message() { Text = $"Sales with id {datavalue} was created or changed" });
+                    return;
+                }
+            } 
+
+
         }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        
     }
 
     void IActionFilter.OnActionExecuting(ActionExecutingContext context)
